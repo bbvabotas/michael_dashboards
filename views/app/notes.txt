@@ -1,0 +1,14 @@
+When moving a built dashboard:
+
+- Move index.html and static folder into it's respective folder under app/
+
+- In app.js
+    - add with folder name:
+    app.use("/tuyyo_dashboard/static", express.static(__dirname + '/views/app/tuyyo_dashboard/static'));
+    
+- In your index.html, change the script and css source:
+    <script type=text/javascript src=/tuyyo_dashboard/static/js/manifest.2ed6244d082924313e3f.js></script>
+    
+- In static/js/app.b2131b23b1.js
+    - Find all the /static references and replace it with what you put for the app.use in app.js
+    module.exports = __webpack_require__.p + "tuyyo_dashboard/static/img/icon_android.3130985.png";
