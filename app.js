@@ -95,7 +95,8 @@ app.get(
 
 app.get('/logout', function (req, res) {
     req.logout();
-    res.redirect('https://accounts.google.com/logout');
+    res.redirect('/auth/login')
+//    res.redirect('https://accounts.google.com/logout');
 });
 
 app.get(
