@@ -48,6 +48,7 @@ app.use(passport.session());
 app.use("/img", express.static(__dirname + '/views/img'));
 app.use("/tuyyo_dashboard/static", express.static(__dirname + '/views/app/tuyyo_dashboard/static'));
 app.use("/customer_feedback/static", express.static(__dirname + '/views/app/customer_feedback/static'));
+app.use("/mobile_app_reviews_ui/static", express.static(__dirname + '/views/app/mobile_app_reviews_ui/static'));
 
 //Make sure the user is authenticated if the user tries to go to any of the URLs within /app/
 app.get('/app/*', function (req, res, next) {
