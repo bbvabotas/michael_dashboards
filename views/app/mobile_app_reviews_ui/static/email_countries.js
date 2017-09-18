@@ -1,0 +1,22 @@
+const emailCountries = {
+    "mobile-android-argentina": "BBVA Frances (Argentina)",
+    "mobile-android-chile": "BBVA Chile",
+    "mobile-android-colombia": "BBVA Colombia",
+    "mobile-android-mexico": "Bancomer Movil (Mexico)",
+    "mobile-android-paraguay": "BBVA Paraguay",
+    "mobile-android-peru": "BBVA Continental (Peru)",
+    "mobile-android-spain": "BBVA Spain",
+    "mobile-android-turkey": "Garanti Mobile Banking (Turkey)",
+    "mobile-android-us": "BBVA Compass (US)",
+    "mobile-android-venezuela": "BBVA Provinet Movil (Venezuela)",
+    "mobile-ios-argentina": "BBVA Frances (Argentina)",
+    "mobile-ios-chile": "BBVA Chile",
+    "mobile-ios-colombia": "BBVA Colombia",
+    "mobile-ios-mexico": "Bancomer Movil (Mexico)",
+    "mobile-ios-paraguay": "BBVA Paraguay",
+    "mobile-ios-peru": "BBVA Continental (Peru)",
+    "mobile-ios-spain": "BBVA Spain",
+    "mobile-ios-turkey": "aranti Cep (Turkey)",
+    "mobile-ios-us": "BBVA Compass (US)",
+    "mobile-ios-venezuela": "BBVA Provinet Movil (Venezuela)"
+}

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Security Word Search</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+
+    <style>
+        .row {
+            margin: 12px 0;
+        }
+        .select_date_range {
+            padding: 5px 10px;
+            text-align: center;
+            border-radius: 5px;
+            width: 250px;
+            margin-top: 10px;
+        }
+        #app_search {
+            margin: 20px 0;
+        }
+        .search_app {
+            position: absolute;
+            width: 200px;
+            left: 50%;
+            margin-left: -60px;
+            background-color: white;
+            border: 1px solid gray;
+            z-index: 100;
+        }
+        .search_app ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            text-align: left;
+        }
+        .search_app ul li {
+            padding: 20px 10px;
+        }
+        .search_app ul li:nth-child(even) {
+            background-color: lightgray;
+        }
+        .search_app ul li:hover {
+            cursor: pointer;
+            background-color: #072146;
+            color: white;
+        }
+        .viewing_app {
+            font-size: 1.5em;
+            margin: 20px 0;
+        }
+        
+        .reviews_table th {
+            text-align: center;
+        }
+        .reviews_table thead {
+            display: block;
+        }
+        .reviews_table tbody {
+            height: 500px;
+            overflow-y: scroll;
+            display: block;
+        }
+        .table_date {
+            min-width: 100px;
+        }
+        .table_comment {
+            width: 100%;
+            text-align: left;
+        }
+        .table_rating: {
+            min-width: 60px;
+        }
+        .comments_search {
+            width: 100%;
+            text-align: left;
+            font-size: 0.9em;
+            margin: 10px 0;
+        }
+        .comments_search input {
+            border: 1px solid gray;
+        }
+        .download_icon {
+            text-align:right;
+            margin: 20px 0;
+        }
+        .download_icon i:hover {
+            cursor: pointer
+        }
+        .sort_normal {
+            font-size: 1.2em;
+        }
+        .sort_normal:hover {
+            cursor: pointer;
+        }
+        
+        .word_warning_message {
+            font-size: 0.9em;
+            font-style: italic;
+        }
+        
+        .icon_img {
+            margin: 20px 0;
+            font-size: 2em;
+        }
+        .icon_img img {
+            height: 100px;
+        }
+        
+        .chart_border {
+            padding: 10px;
+            border: 1px solid lightgray;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body style="text-align: center;">
+<!--
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>Security Word Search</h2>
+        </div>
+    </div>
+-->
+    <div class="row">
+<!--
+        <div class="col-sm-12">
+            <label for="date_range">Select Date Range:</label>
+            <input id="date_range" class="select_date_range">
+        </div>
+-->
+        <div class="col-sm-6">
+            <h2>Security Word Search</h2>
+        </div>
+        <div class="col-sm-6">
+            <label for="date_range">Select Date Range:</label>
+            <input id="date_range" class="select_date_range">
+        </div>
+    </div>
+    <hr>
+    <div id="app">
+        <div class="row">
+            <div class="col-sm-12">
+                <div id="app_search">
+                    <div style="position: relative">
+                        App Search: <input v-on:focus="toggleSearchAppList" v-on:blur="toggleSearchAppList" type="text" style="width: 200px; border: 2px solid gray; border-radius: 5px;" name="query" v-model="query">
+                        <div v-if="show_app_list" class="search_app">
+                            <ul v-for="item in searchAppFilter">
+                                <li v-on:click="changeAppName(item.app)">{{ item.app }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="viewing_app">Viewing app: <strong>{{ appName }}</strong></div>
+<!--                    <h2></h2>-->
+                </div>
+            </div>
+        </div>
+        <div v-if="show_loading">
+            loading...
+        </div>
+        <div v-else>
+           
+            <div class="row icon_img">
+                <img src="/mobile_security_word_search/static/img/icon_android.png"> Android
+            </div>
+           
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div style="width:100%;">
+                                <div class="chart_border">
+                                    <div style="height:250px; margin: 20px 0" id="android_word_frequency_english"></div>
+                                    <div>
+
+                                        <input v-model="android_english_word" style="border: 2px solid gray; border-radius: 5px;">
+                                        <button class="btn btn-default" @click="androidAddEnglishWord">Add Custom Word</button>
+    <!--                                    <button class="btn btn-default">Edit Words</button>-->
+                                    </div>
+                                    <div class="word_warning_message">
+                                        {{ android_english_warning_message }}
+                                    </div>
+                                </div>
+                                
+                                <div class="chart_border">
+                                    <div style="height:250px;" id="android_word_frequency_spanish"></div>
+                                    <div>
+
+                                        <input v-model="android_spanish_word" style="border: 2px solid gray; border-radius: 5px;">
+                                        <button class="btn btn-default" @click="androidAddSpanishWord">Add Custom Word</button>
+    <!--                                    <button class="btn btn-default">Edit Words</button>-->
+                                    </div>
+                                    <div class="word_warning_message">
+                                        {{ android_spanish_warning_message }}
+                                    </div>
+                                </div>
+                            </div>    
+                        </div>
+                        <div class="col-sm-6">
+                            <div>View reviews from the word frequency by searching for the word below.</div>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    
+                                    <div class="comments_search">Search Comments: <input style="width:200px;" type="text" name="android_query" v-model="android_query"></div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="download_icon"><i class="fa fa-download fa-2x export_button" title="Download to CSV" @click="androidExportDataToCSV()"></i></div>
+                                </div>
+                            </div>
+
+                            <table class="table table-striped reviews_table">
+                                <thead>
+                                    <tr>
+                                        <th class="table_date">
+                                            <div>Date</div>
+                                            <div>
+                                                <span>
+                                                    <i class="fa fa-arrow-circle-o-down sort_normal" v-bind:style="{ color: androidSortColorDateDesc }" @click="androidSortColumn('date', 'up')"></i>
+                                                </span>
+                                                <span><i class="fa fa-arrow-circle-o-up sort_normal" v-bind:style="{ color: androidSortColorDateAsc }" @click="androidSortColumn('date', 'down')"></i></span>
+                                            </div>
+                                        </th>
+                                        <th class="table_comment" style="text-align: center;">
+                                            <div>
+                                                Reviews
+                                            </div>
+                                            <div>
+                                                <i style="font-size: 0.9em;">showing {{ androidTableFilter.length }} / {{ android_total_reviews }} reviews</i>
+                                            </div>
+                                        </th>
+                                        <th class="table_rating">
+                                            <div>Rating</div>
+                                            <div>
+                                                <span><i class="fa fa-arrow-circle-o-down sort_normal" v-bind:style="{ color: androidSortColorRatingDesc }" @click="androidSortColumn('rating', 'up')"></i></span>
+                                                <span><i class="fa fa-arrow-circle-o-up sort_normal" v-bind:style="{ color: androidSortColorRatingAsc }" @click="androidSortColumn('rating', 'down')"></i></span>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="item in androidTableFilter">
+                                        <td class="table_date">{{ item.date }}</td>
+                                        <td class="table_comment">
+                                            <div v-if="item.english_subject != ''"><strong>English Subject:</strong><br> {{ item.english_subject }}</div>
+                                            <div v-if="item.english_body != ''"><strong>English Comment:</strong><br> {{ item.english_body }}<br><br></div>
+                                            <div v-if="item.translated_subject != ''">
+                                                <strong>
+                                                    <span v-if="appName == 'Turkey Mobile'">Turkish Subject:</span>
+                                                    <span v-if="appName != 'Turkey Mobile'">Spanish Subject:</span>
+                                                </strong><br> {{ item.translated_subject }}</div>
+                                            <div v-if="item.translated_body != ''">
+                                                <strong>
+                                                    <span v-if="appName == 'Turkey Mobile'">Turkish Comment:</span>
+                                                    <span v-if="appName != 'Turkey Mobile'">Spanish Comment:</span>
+                                                </strong><br> {{ item.translated_body }}</div>
+                                        </td>
+                                        <td class="table_rating" style="text-align:right">
+                                            {{ item.rating }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row icon_img">
+                <img src="/mobile_security_word_search/static/img/icon_ios.svg"> iOS
+            </div>
+            
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div style="width:100%;">
+                                <div class="chart_border">
+                                    <div style="height:250px; margin: 20px 0" id="ios_word_frequency_english"></div>
+                                    <div>
+
+                                        <input v-model="ios_english_word" style="border: 2px solid gray; border-radius: 5px;">
+                                        <button class="btn btn-default" @click="iosAddEnglishWord">Add Custom Word</button>
+    <!--                                    <button class="btn btn-default">Edit Words</button>-->
+                                    </div>
+                                    <div class="word_warning_message">
+                                        {{ ios_english_warning_message }}
+                                    </div>
+                                </div>
+                                
+                                <div class="chart_border">
+                                    <div style="height:250px; margin: 20px 0" id="ios_word_frequency_spanish"></div>
+                                    <div>
+
+                                        <input v-model="ios_spanish_word" style="border: 2px solid gray; border-radius: 5px;">
+                                        <button class="btn btn-default" @click="iosAddSpanishWord">Add Custom Word</button>
+    <!--                                    <button class="btn btn-default">Edit Words</button>-->
+                                    </div>
+                                    <div class="word_warning_message">
+                                        {{ ios_spanish_warning_message }}
+                                    </div>
+                                </div>
+                            </div>    
+                        </div>
+                        <div class="col-sm-6">
+                            <div>View reviews from the word frequency by searching for the word below.</div>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    
+                                    <div class="comments_search">Search Comments: <input style="width:200px;" type="text" name="ios_query" v-model="ios_query"></div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="download_icon"><i class="fa fa-download fa-2x export_button" title="Download to CSV" @click="iosExportDataToCSV()"></i></div>
+                                </div>
+                            </div>
+
+                            <table class="table table-striped reviews_table">
+                                <thead>
+                                    <tr>
+                                        <th class="table_date">
+                                            <div>Date</div>
+                                            <div>
+                                                <span>
+                                                    <i class="fa fa-arrow-circle-o-down sort_normal" v-bind:style="{ color: iosSortColorDateDesc }" @click="iosSortColumn('date', 'up')"></i>
+                                                </span>
+                                                <span><i class="fa fa-arrow-circle-o-up sort_normal" v-bind:style="{ color: iosSortColorDateAsc }" @click="iosSortColumn('date', 'down')"></i></span>
+                                            </div>
+                                        </th>
+                                        <th class="table_comment" style="text-align: center;">
+                                            <div>
+                                                Reviews
+                                            </div>
+                                            <div>
+                                                <i style="font-size: 0.9em;">showing {{ iosTableFilter.length }} / {{ ios_total_reviews }} reviews</i>
+                                            </div>
+                                        </th>
+                                        <th class="table_rating">
+                                            <div>Rating</div>
+                                            <div>
+                                                <span><i class="fa fa-arrow-circle-o-down sort_normal" v-bind:style="{ color: iosSortColorRatingDesc }" @click="iosSortColumn('rating', 'up')"></i></span>
+                                                <span><i class="fa fa-arrow-circle-o-up sort_normal" v-bind:style="{ color: iosSortColorRatingAsc }" @click="iosSortColumn('rating', 'down')"></i></span>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="item in iosTableFilter">
+                                        <td class="table_date">{{ item.date }}</td>
+                                        <td class="table_comment">
+                                            <div v-if="item.english_subject != ''"><strong>English Subject:</strong><br> {{ item.english_subject }}</div>
+                                            <div v-if="item.english_body != ''"><strong>English Comment:</strong><br> {{ item.english_body }}<br><br></div>
+                                            <div v-if="item.translated_subject != ''">
+                                                <strong>
+                                                    <span v-if="appName == 'Turkey Mobile'">Turkish Subject:</span>
+                                                    <span v-if="appName != 'Turkey Mobile'">Spanish Subject:</span>
+                                                </strong><br> {{ item.translated_subject }}</div>
+                                            <div v-if="item.translated_body != ''">
+                                                <strong>
+                                                    <span v-if="appName == 'Turkey Mobile'">Turkish Comment:</span>
+                                                    <span v-if="appName != 'Turkey Mobile'">Spanish Comment:</span>
+                                                </strong><br> {{ item.translated_body }}</div>
+                                        </td>
+                                        <td class="table_rating" style="text-align:right">
+                                            {{ item.rating }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/highcharts/highcharts.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/clipboard.js/1.6.0/clipboard.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.3.6/papaparse.min.js"></script>
+    
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    
+    <script src="/mobile_security_word_search/static/js/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>UI Tools | App Reviews</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+<!--    <link rel="stylesheet" href="https://code.highcharts.com/css/highcharts.css">-->
+   
+    <style>
+        .row {
+            margin: 0;
+        }
+        select {
+            margin: 20px 10px 10px 10px;
+            padding: 6px 10px;
+            border-radius: 5px;
+        }
+        .select_date_range {
+            padding: 5px 10px;
+            text-align: center;
+            border-radius: 5px;
+            width: 250px;
+        }
+        .trend_btn {
+            background-color: white;
+            padding: 5px 10px;
+            margin: 5px;
+            border: 1px solid gray;
+            border-radius: 5px;
+        }
+        .trend_btn_active {
+            border: 2px solid blue;
+        }
+        .neg_circle_big {
+            font-size: 3em;
+            font-weight: bold;
+            width: 120px;
+            height: 120px;
+            text-align: center;
+            line-height: 114px;
+            vertical-align: middle;
+            border: 3px solid gray;
+            border-radius: 50%;
+            margin: auto;
+        }
+        .neg_circle_sm {
+            font-size: 1em;
+            font-weight: bold;
+            width: 50px;
+            height: 50px;
+/*            padding: 10px 5px 10px 5px;*/
+            text-align: center;
+            border-radius: 50%;
+            display: inline-block;
+            line-height: 44px;
+            vertical-align: middle;
+        }
+        .red {
+            border: 3px solid #ff8b5a;
+        }
+        .orange {
+            border: 3px solid #ffb234;
+        }
+        .star_img {
+            height: 20px;
+        }
+        .frequency_chart {
+            height: 150px;
+            width: 100%;
+        }
+        .trend_chart {
+            height: 300px;
+        }
+        
+        .appbot_graph {
+            width: 100%;
+        }
+        .appbot_graph td {
+            padding: 1px 4px;
+        }
+        .appbot_graph tr td:nth-child(4){
+            text-align: right;
+        }
+        .appbot_graph_gray {
+            background-color: #e6e6e6;
+            position: relative;
+            width:100%;
+            height: 20px; 
+        }
+        .appbot_graph_orange {
+            background-color: orange;
+            position: absolute;
+            height: 20px; 
+            z-index: 10;
+        }
+        .appbot_graph_star {
+            height: 16px;
+            width: 16px;
+            background-image: url('data:image/png;base64,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');
+            background-size: cover;
+            background-color: #e2e2e2;
+        }
+        .appbot_avg_star_wrapper {
+            margin: 10px 0;
+        }
+        .appbot_avg_star {
+            display: inline-block;
+            position: relative;
+            height: 26px;
+            width: 26px;
+            background-color: lightgray;
+            margin: 1px
+        }
+        .appbot_avg_star_orange {
+            position: absolute;
+            height: 26px;
+            background-color: orange;
+        }
+        .appbot_avg_star_img {
+            height: 26px;
+            width: 26px;
+            position: absolute;
+            z-index: 10;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJwAAACcCAYAAACKuMJNAAAPC0lEQVR4Xu1dC9SmUxV+nhS5dXWJ6YIk1RAtKtco12VQKjEjclsYLXdhXEMYuVSSSTVuDUlUQmpRy6UiulguCWEqt6RWIVE8rT3Op39mvu//3vvZ7/ees9a/xvKfvc8+z37+9333++6zNyUJaeRF4AYABLBuXsGuz2ciXCEKbBEId0Uh6Q4LJcLld/4dJFcxMUm3A5iYX0V3JRLh8vt+MsmLAuEmA5iVX0V3JRLh8vn+QQArkJzz3CvJnuPuB7BcPjXdnZ0Il8/3e5GcMVZE0lQAZ+ZT093ZiXDZff84gAkk/zMP4V4B4CEAS2ZX1d2ZiXDZfX8oyen9pks6DMAJ2VV1d2YiXDbfPwlgWZJPDSDcYgAeBrB4NnXdnZUIl833J5KcNt5USScBOCSbuu7OSoQb7vvnwrPbX4cQbonwLLfgcJXdnZEIN9z3Z5G0SHTokGQR7B5DJ3Z4QiLc+M5/Ibx3m52FI5LeEt7LvSzL/C7OSYQb3+sXkpyShxiS7CvEdnlkujQ3EW58b08keWceQkh6F4A78sh0aW4i3GBvX0lyUhEySLoKwOZFZEddJhFusIfXIfnzIgSQtD6A64rIjrpMIlx/D99Icr0yzpd0C4A1yugYRdlEuP5enUTyyjIOl7QlgMvL6BhF2US4+b36UoJlWYdL+j2AlcrqGSX5RLj5vTmF5IVVOFnSDgAuqELXqOhIhJvbk3MlWJZ1sqQFAPzRPvyX1TUq8olwc3tyKsmzqnSupE8DOKNKnW3WlQj3f+/1TbAs61xJrwxXuZSgaUfd0jHBlyh1GElLMap8SDocwPGVK26hwkS4F502boJlWb9KSgmaAcREuBeBOImkpYnXNiSdDODg2hZoieJEOCBTgmVZf0pKCZrpGW4OjTInWFZAurMB7F5WT5vlu36Fy5VgWdbRKUEzRakXkbRyDY0NSRcD2LaxBZ0t1PUrXO4Ey7L+63qCZpcJdxVJK7vV+JB0NYBNG1/YwYJdJtx6JG+M4QNJGwD4aYy1Y6/ZVcLdSnLNmOB3NUGzq4QrnWBZlqyStgbwvbJ62ibfRcJVlmBZ1tldTNDsIuF2IOmiaqWkHQGcV5a4bZLvGuEqTbAs6+guJmh2jXB7k/xKWaJUKS9pHwBfrFKnZ11dIlwtCZZlnRsSNK223GvL6mqDfJcIN43kiR6dIulIAMd6tK1qm7pCuFoTLMs6RdJrQgXNhcvq8i7fFcJNJ3moZ2dIOgXAgZ5trMK2LhCukQTLss6QtEw4bPPysro8y3eBcDNI7uXZCT3bJH0dwK5tsLWojaNOuEYTLIs6YQzh3gbgbgAjW0Fz1AnXeIJlBaS7BMDHyurxKj/qhGs8wbKso0c9QXOUCRctwbIC0v0YwMZl9XiUH2XCrU/SOje3bkj6IIBrW2d4BoNHhXB/A2C12OyB+14At5G0OrutHZIs/X3VUF/u7QDs53Wt3VAwvE2Esy5+fxhDLCOY/dxJ8h9td0QW+yW9GoBVSV85ELBHxLcCsK6G7odHwv0lEKlHKLtq2X/fT/J594hGMDCkOa3Qh4hGyKUimDRwyViEexbAfX2IdRdJ++6ZRkUISLIOh3ZV7F0N7V+7Qq4IoPG+YHUT7pF5SNW7aj1A0l7KphEJAUn2cnn5MUQce5t+Q11mVUG4f4cH9d6tr0cqu1o9XZfhSW99CEhaFMA7+9yi7UuIFVgsPPIQztps9yLBHqns39kkVdiCJNgaBCQRwHLz3J57t+oJWTYyL+H+BeCeMbfB3lXrdySfyaIwzekmApIsl8+uivM+K9pVcZEeKka40wFYE4x7SFrF7TQSApUiEKpGGfEmGeEeAPB+ko9VukpSlhAYg4CkpQHc1Lul2iuKtUiO22Y7IZgQKIJAqP75C3sVM/YZzp7XrMBLIl0RVJNMXwQC2eybtr12ma9svpFubZJ/T/glBMoiIMmOPloL0Dlk60c4+3+3A1iX5D/LLpjku4uApFcBsHJoq4xFYdB7uF8DsPSe9OK2u5wpvPPw4vh6AO+ZV8l4L35vBrBhev9WGPdOCob3cVZs8X39ABj2pcEuiZsk0nWSO7k3Hchm2crrDhIeRjiTM9JtRNIyPNJICAyKRhcCcM14ZBsUNPRT+BMAm5G0JMg0EgJzISDJkj+tULalxo87slzhegpMoZUqTUmQw1Dt0O9D8ucVdkHKsu08hDN9lwP4SMplywLt6M8JOXXfBbBV1t3mJZzp/Q6ATyTSZYV4NOcFsllXnVyHtosQrke6bVMe3GiSadiuQl7ct/OSLU/Q0M+GWSR3GGZc+v3oISDpmwCmFNlZ0Stcb62ZJEe62k8RUEdZRtI3AOxSdI9lCWfrNtZvtOgmk1w1CEiygtylSp9VQTjbzRdI7l/NtpIWjwiEzPD9ytpWFeES6cp6wrF8VWQrGzT0g+gYkp91jF0yLScCko4GcExOsYHTq7zC9RbZj2RnGl1U5QiPeiTta49LVdpWB+HMvr1IzqjS0KSrWQQk7WkBYdWr1kW4RLqqPdWgvrrIVscz3Lyw7ELynAaxSkuVREDSzgBmllTT6DPc2MWsBIS1i7ywrg0kvdUhIGkyAPuKYCUdahl13lJ7BluVJPvuemktO0hKK0FA0kcB2PfRWkv2N0E4A8Ry6Cyt6QeVoJOUVIqApC0BWJrRApUq7qOsKcLZ0v8FsE0iXd0uzac/kO0yAI20XGqScD3SWdbwj/LBkmbXgYCkTQFYtm4jZGsiSu2HkzVbs/MRdpQsjUgISNownENotOxq01e4HrxWNdNOgv0sEt6dXlbSOuGEValqlkVAjEU4s9WKH9pB618WMTzJFENA0nsB2N3lpSKBxTQVk4pJOLP4KQAfSqQr5ry8UoFs1uFmsbyyVc2PTbge6ayOyW+q2lTSMz8CklYHYPU+opEtVtDQjw/WScYqNt2RyFI9ApImhgoK1skm6vBwhesBYP2yrDadVUZPoyIEJFmRZ6vR5qJPlyfCGcSPh9Kv1lMrjZIISLIeXFbqdMmSqioT90Y429ij4faaSFfCzYFsVoiotq4yRczzSLge6ayy+uwim+q6TChTf5M3snkKGvpx5F6SK3WdPEX2L8mau1hfBHfD6xXOgLLuN9bZJI2cCEi6C8A7coo1Mt0z4S4lmatQSiOItWARSVZwyPLb3A3PhDuO5FHuEGuBQZKOBXCkR1M9E257kt/yCJp3myRtD8BlWr9nwq1G8jbvzvVon6R3A/itR9s8E27BVFO4GGVCzV3LO3Q3vBLuPpIuw3p3HhxgkCRr2GdfGlwNr4S7nOTWrpBqmTGSrB6zHY5xNbwSbjrJQ10h1TJjJJ0E4BBvZnsl3E4kz/cGVpvskbQTgHO92eyVcGuSvNUbWG2yR9KaANyl73slXIpQS7I7dPSzFH5XwyPhZpNczhVKLTVGkmXbvNmT+R4JdzXJzT2B1FZbJFm7Kjvs7GZ4JNxpJA90g1CLDZF0GgBXxb49Em43ktYLII2SCEjaDcDXSqqpVNwj4ewgjeXhp1ESgXDC3tLM3QyPhFuM5NNuEGqxIR4jVW+Ee4Tksi32sTvTJT3i6WyDN8JdS3Ijd15rsUGSrJu3VUpyMbwR7gyS+7hAZkSMkPRlAHt72Y43wk0lWXlvAC9gx7BD0lQAZ8ZYu9+a3gi3AcnrvIAzCnaEwoN2W3UxvBFuKZJW7iGNihCQtHSoZlCRxnJqPBHuCZJLlNtOku6HgKQnY5fp6tnliXDXk/xAokz1CEi6weq1VK85v0ZPhPsqSWsolkbFCEg6G8DuFastpM4T4fYl+aVCu0hC4yIgyTo5n+4BJk+E25jkNR5AGTUbJG0CwEVvDE+Em0DyYe/OlmSl5nvpU6eStBYAroekNwL4kwcjvRDuKZKLewBkkA2SrMPeFAAnAHhTmGdOnAZgFknrnOh2eIlUvRDuJpJrefWWpLXD2/rVBthoZRX2Jmm1dF0OSTcDsB4NUYcXws0kuWtUJPosLskKIp6S40CxdUs8iKQVBHQ1JNmRQTs6GHV4IZw56dSoSIxZXNLrARwXXiXkbXxmXRMty/ZIkk842tNnAEyPbY8Xwm1B8qrYYISA4AAAduq/7DOlvd230+92RiN6YCFpEoDo/Wq9EG55kg/GIlwICD4J4HMALKKrcvwZwOEALogZWEhaAUD0yvAeCPccyYWq9HAeXZLWDwGBdWupc1iXnT1iBhaSngXQaLvKeQH1QLhfkVyjTk/30x0CAjtGt0XDa18J4IAYgYUk62c2KNJuBAYPhLNbzY6N7BaAJOvKYgGBHaGrvcf7gH09HwKLo5pMx5I0C8DkprDut44Hwk0jeWLdIEhaOHwhsBJWUTvqjdmrBRYWOTbyxULSEeGPrW64B+r3QLgPk/x+XQiEgMDePx0PYEJd65TUa4GFkeH8OgMLSdsAuLSkraXEPRBuJZL3ltrFAOEGA4KqzLfAwr5YWF/Tyoekla3hSuWKcyiMTTgrfLwwyRdy2Dx0qiTrwmIvkttaFMfeSe5fdWAh6WUADPNYz66ITbjbSa46lEEZJ4SAwN6l7RIT1IzmDptmgYXVWDmiysBC0p0AorWUik24i0luNwz5Yb8PAcHBAOzHS0AwzOysv7eigifbN12Sz2QVGjRP0iUAorWUik24o0lam55CI9wiPhUir1EvEfFQaGd0bpnAInZbpNiE+zhJa0SWe4SAYIbXrnm5N5RdoFRgIcnuKBdlX67ambEJN5GkPVNkHiEgsPx8V5UdM2+guok/tPeKJHNFnZLsmTlaS6mYhLOHYisenSlCDQd6LSDYGYBFW2kAhuFMSw7IGljEbosUk3B3kxzaRDYEBPZ14CAAiyaW9UXAAovP20+WwEKSvfdcMQaWMQl3GcmBTWRDQGCvNyyoWCYGOC1c0w4hWZ9UCywG3jkk2ZedrWLsLybhjifZt4mspM3CX2zdKUMxMG9iTXuu23PQFwtJ9u06SmupmISbQnKuJrLh04tFnqnkQzW0tLOo9sVirsBCkmXnnFfNEvm0xCTc6iTnNJENAYH91dlH9hQQ5PPhsNl2az0nBBaPBbwt//CWYYJ1/D4m4Szz1H4sILCDxYvUscGk8yUErFC3BRb21cIO+kRp4BuLcPeHAyaWCGn1y9JoDoFHQyrUUTHaIv0P8jVv+IMrpp0AAAAASUVORK5CYII=');
+            background-size: cover;
+        }
+        
+        .star_wrapper {
+            display: inline-block;
+            position: relative;
+            width: 26px;
+            height: 26px;
+/*            border: 1px solid gray;*/
+        }
+        .star_border_1 {
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: 4px;
+            top: 22px;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 4px solid white;
+        }
+        .star_border_2 {
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: 12px;
+            top: 16px;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 4px solid white;
+            -webkit-transform: rotate(282deg);
+        }
+        .star_border_3 {
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: 8px;
+            top: 4px;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 4px solid white;
+            -webkit-transform: rotate(222deg);
+        }
+        .star_border_4 {
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: 0;
+            top: 4px;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 4px solid white;
+            -webkit-transform: rotate(140deg);
+        }
+        .star_border_5 {
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: -4px;
+            top: 16px;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 4px solid white;
+            -webkit-transform: rotate(75deg);
+        }
+        
+        
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity:1 ;}
+        }
+
+        .copybtn_popup_wrapper {
+            width: 300px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -150px;
+            animation: fadeIn 1s;
+        }
+
+        .copybtn_popup_wrapper::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+
+        }
+    </style>
+</head>
+
+<body>
+   
+   
+   
+   
+   
+   
+   
+    <div class="wrapper" style="width:800px; margin:auto;">
+        
+        <h2 style="text-align: center;">Mobile App Reviews Email UI</h2>
+        
+        <div class="row" style="text-align:center;">
+            <div class="col-sm-12">
+               <div>
+                    <label for="select_platform">Platform: </label>
+                    <select id="select_platform">
+                        <option>Android</option>
+                        <option>IOS</option>
+                    </select>
+
+                    <label for="select_country">Country: </label>
+                    <select id="select_country">
+                        <option>Argentina</option>
+                        <option>Chile</option>
+                        <option>Colombia</option>
+                        <option>Mexico</option>
+                        <option>Paraguay</option>
+                        <option>Peru</option>
+                        <option>Spain</option>
+                        <option>Turkey</option>
+                        <option>US</option>
+                        <option>Venezuela</option>
+                    </select>
+
+                    <label for="date_range">Date Range: </label>
+                    <input id="date_range" class="select_date_range">
+               </div>
+               
+<!--
+                <div>
+                    <button class="btn btn-default" v-on:click="emailTest">Send Email</button>
+                </div>
+-->
+            </div>
+            
+        </div>
+        
+        <hr>
+        
+        <div id="app">
+            
+            
+            
+<!--
+            <div class="row">
+                <div class="col-sm-12" style="text-align: center;">
+                    <div class="copybtn_popup_wrapper" v-if="email_sent_confirm != ''">
+                        {{ email_sent_confirm }}
+                    </div>
+                    <button class="btn btn-default" v-on:click="emailTest">Send Email</button>
+                </div>
+            </div>
+            <br>
+-->
+            
+            
+            <div id="email_html">
+                
+                <div style="width:800px;">
+                    
+                
+               
+                    <div class="row">
+                        <div class="col-sm-12" style="font-size:20px; color: blue; text-align: center;">
+                            {{ email_country }} Mobile Banking App ({{ email_platform }}) <br> Public App Reviews Last Week ({{ email_start_date }} thru {{ email_end_date }})
+                        </div>
+                    </div>
+                    <br>
+
+
+                    <div class="row">
+                        <div class="col-sm-12" style="color: blue; font-weight: bold;">
+                            <div>Review Of The Week:</div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div v-if="review_of_the_week.english_subject != ''">
+                                <div><strong>English Subject:</strong></div>
+                                <div>{{ review_of_the_week.english_subject }}</div>
+                            </div>
+                            <div>
+                                <div><strong>English Comment:</strong></div>
+                                <div>{{ review_of_the_week.english_body }} <span style="color: orange; font-weight: bold"> - {{ review_of_the_week.rating }} Star</span></div>
+                            </div>
+                            <br>
+                            <div v-if="review_of_the_week.translated_subject != ''">
+                                <div><strong>
+                                    <span v-if="selected_country == 'turkey'">Turkish Subject:</span>
+                                    <span v-if="selected_country != 'turkey'">Spanish Subject:</span>
+                                </strong></div>
+                                <div>{{ review_of_the_week.translated_subject }}</div>
+                            </div>
+                            <div>
+                                <div><strong>
+                                    <span v-if="selected_country == 'turkey'">Turkish Comment:</span>
+                                    <span v-if="selected_country != 'turkey'">Spanish Comment:</span>
+                                </strong></div>
+                                <div>{{ review_of_the_week.translated_body }} <span style="color: orange; font-weight: bold"> - {{ review_of_the_week.rating }} Star</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br><br>
+
+                    <div v-if="!show_loading" id="graph_and_frequency">
+                        <div class="row">
+                            <div class="col-sm-12" style="color: blue; font-weight: bold;">
+                                <div>Ratings With Reviews:</div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row" style="text-align: center;">
+                            <div class="col-sm-3">
+                                <div>Reviews</div>
+                                <div style="font-size:48px;">{{ appbot_review_count }}</div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div>Avg Rating</div>
+
+                                <div class="appbot_avg_star_wrapper">
+                                    <div class="appbot_avg_star">
+                                        <div class="appbot_avg_star_img"></div>
+                                        <div class="appbot_avg_star_orange" :style="{ width: star_rating_fill.star_1 + '%' }"></div>
+                                    </div>
+                                    <div class="appbot_avg_star">
+                                        <div class="appbot_avg_star_img"></div>
+                                        <div class="appbot_avg_star_orange" :style="{ width: star_rating_fill.star_2 + '%' }"></div>
+                                    </div>
+                                    <div class="appbot_avg_star">
+                                        <div class="appbot_avg_star_img"></div>
+                                        <div class="appbot_avg_star_orange" :style="{ width: star_rating_fill.star_3 + '%' }"></div>
+                                    </div>
+                                    <div class="appbot_avg_star">
+                                        <div class="appbot_avg_star_img"></div>
+                                        <div class="appbot_avg_star_orange" :style="{ width: star_rating_fill.star_4 + '%' }"></div>
+                                    </div>
+                                    <div class="appbot_avg_star">
+                                        <div class="appbot_avg_star_img"></div>
+                                        <div class="appbot_avg_star_orange" :style="{ width: star_rating_fill.star_5 + '%' }"></div>
+                                    </div>
+                                </div>
+                                <div>{{ appbot_review_avg }}</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <table class="appbot_graph">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="appbot_graph_star"></div>
+                                            </td>
+                                            <td>5</td>
+                                            <td style="width: 100%">
+                                                <div class="appbot_graph_gray">
+                                                    <div class="appbot_graph_orange" v-bind:style="{ width: appbot_graph_data.star_5.width + '%' }"></div>
+                                                </div>
+
+                                            </td>
+                                            <td>{{ appbot_graph_data.star_5.count }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="appbot_graph_star"></div>
+                                            </td>
+                                            <td>4</td>
+                                            <td style="width: 100%">
+                                                <div class="appbot_graph_gray">
+                                                    <div class="appbot_graph_orange" v-bind:style="{ width: appbot_graph_data.star_4.width + '%' }"></div>
+                                                </div>
+
+                                            </td>
+                                            <td>{{ appbot_graph_data.star_4.count }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="appbot_graph_star"></div>
+                                            </td>
+                                            <td>3</td>
+                                            <td style="width: 100%">
+                                                <div class="appbot_graph_gray">
+                                                    <div class="appbot_graph_orange" v-bind:style="{ width: appbot_graph_data.star_3.width + '%' }"></div>
+                                                </div>
+
+                                            </td>
+                                            <td>{{ appbot_graph_data.star_3.count }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="appbot_graph_star"></div>
+                                            </td>
+                                            <td>2</td>
+                                            <td style="width: 100%">
+                                                <div class="appbot_graph_gray">
+                                                    <div class="appbot_graph_orange" v-bind:style="{ width: appbot_graph_data.star_2.width + '%' }"></div>
+                                                </div>
+
+                                            </td>
+                                            <td>{{ appbot_graph_data.star_2.count }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="appbot_graph_star"></div>
+                                            </td>
+                                            <td>1</td>
+                                            <td style="width: 100%">
+                                                <div class="appbot_graph_gray">
+                                                    <div class="appbot_graph_orange" v-bind:style="{ width: appbot_graph_data.star_1.width + '%' }"></div>
+                                                </div>
+
+                                            </td>
+                                            <td>{{ appbot_graph_data.star_1.count }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="trend_chart" id="ratings_over_time_chart"></div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-sm-12" style="text-align:center;">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <h5>Negative Reviews</h5>
+                                        <div class="neg_circle_big">
+                                            <div v-if="review_num == 0">0%</div>
+                                            <div v-else>{{ (((star_one_count + star_two_count) / review_num) * 100).toFixed(0) }}%</div>
+                                        </div>
+                                        <h5><span>{{ star_one_count + star_two_count }}</span> out of <span class="total_review_count">{{ review_num }}</span> reviews are negative</h5>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div><img class="star_img" src="/mobile_app_reviews_ui/static/img/star_1.png"></div>
+                                        <div>
+                                            <div class="red neg_circle_sm">
+                                                <div v-if="review_num == 0">0%</div>
+                                                <div v-else>{{ ((star_one_count / review_num) * 100).toFixed(0) }}%</div>
+
+                                            </div>
+                                            <span>
+                                                <span style="font-weight:bold">{{ star_one_count }}</span> out of a total of 
+                                                <span class="total_review_count" style="font-weight:bold">{{ review_num }}</span> reviews are one star
+                                            </span>
+                                        </div>
+                                        <div><i>word frequency with review count</i></div>
+                                        <div class="frequency_chart" id="one_star_frequency"></div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div><img class="star_img" src="/mobile_app_reviews_ui/static/img/star_2.png"></div>
+                                        <div>
+                                            <div class="orange neg_circle_sm">
+                                                <div v-if="review_num == 0">0%</div>
+                                                <div v-else>{{ ((star_two_count / review_num) * 100).toFixed(0) }}%</div>
+
+                                            </div>
+                                            <span>
+                                                <span style="font-weight:bold">{{ star_two_count }}</span> out of a total of 
+                                                <span class="total_review_count" style="font-weight:bold">{{ review_num }}</span> reviews are two stars
+                                            </span>
+                                        </div>
+                                        <div><i>word frequency with review count</i></div>
+                                        <div class="frequency_chart" id="two_star_frequency"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+        <!--            <hr>-->
+
+        
+                    <div v-if="!show_loading" class="row">
+                        <div class="col-sm-12">
+                            <div style="text-align:center;">
+                                <div class="copybtn_popup_wrapper" v-if="show_copy_success">
+                                    Successfuly copied the table to the clipboard!
+                                </div>
+                                <button data-clipboard-target="#app_recent_comments_table" id="btn_copy">Copy table</button>
+                                <div style="font-size:0.8em; font-style:italic">clicking on this button will copy the below table to your clipboard.  This enables you to paste this table into an email easily</div>
+
+                            </div>
+                        </div>
+                    </div>
+        
+
+                    <br><br>
+                    <div id="app_recent_comments_table">
+                        
+<!--
+                        <div style="display: block;">
+                            <div class="row">
+                                <div class="col-sm-12" style="text-align: left; color: blue; font-weight: bold; margin: 20px 0;">
+                                    Reviews This Week:
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    
+                                </div>
+                            </div>
+                        </div>
+-->
+                       <div style="text-align: left; color: blue; font-weight: bold; margin: 20px 0;">
+                            Reviews This Week:
+                        </div>
+                       <div v-if="!show_loading" id="app_recent_comments">
+                            <div class="btn-group">
+                                <span><i>Number of reviews: {{ review_num }}</i></span>
+                            </div>
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th class="col-xs-2">Date</th>
+                                    <th class="col-xs-9">Comment</th>
+                                    <th class="col-xs-1">Rating</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="item in selected_reviews" v-on:click="reviewOfTheWeek(item)">
+                                        <td>{{ item.date }}</td>
+                                        <td>
+                                            <div v-if="item.english_subject != ''"><strong>English Subject:</strong><br> {{ item.english_subject }}</div>
+                                            <div v-if="item.english_body != ''"><strong>English Comment:</strong><br> {{ item.english_body }}<br><br></div>
+                                            <div v-if="item.translated_subject != ''">
+                                                <strong>
+                                                    <span v-if="selected_country == 'turkey'">Turkish Subject:</span>
+                                                    <span v-if="selected_country != 'turkey'">Spanish Subject:</span>
+                                                </strong><br> {{ item.translated_subject }}</div>
+                                            <div v-if="item.translated_body != ''">
+                                                <strong>
+                                                    <span v-if="selected_country == 'turkey'">Turkish Comment:</span>
+                                                    <span v-if="selected_country != 'turkey'">Spanish Comment:</span>
+                                                </strong><br> {{ item.translated_body }}</div>
+                                        </td>
+                                        <td style="text-align:right">
+                                            {{ item.rating }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div v-if="show_loading" style="text-align:center;">Getting data <i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i></div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br><br>
+    </div>
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/highcharts/highcharts.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/clipboard.js/1.6.0/clipboard.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+    
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    
+    <script src="/mobile_app_reviews_ui/static/email_countries.js"></script>
+    <script src="/mobile_app_reviews_ui/static/app.js"></script>
+</body>
+
+</html>

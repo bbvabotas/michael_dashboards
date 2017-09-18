@@ -9,9 +9,6 @@ var express = require('express'),
     session = require('express-session'),
     GoogleStrategy = require('passport-google-oauth2').Strategy;
 
-//var GOOGLE_CLIENT_ID = "197007501172-flpm5v0dd2sh2fnfuevcree7qi06391s.apps.googleusercontent.com",
-//    GOOGLE_CLIENT_SECRET = "CHZKRg4GfBsWiyNVn_M_tPZR"
-
 var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET,
     GOOGLE_CALLBACK = process.env.GOOGLE_CALLBACK,
@@ -49,6 +46,7 @@ app.use("/img", express.static(__dirname + '/views/img'));
 app.use("/tuyyo_dashboard/static", express.static(__dirname + '/views/app/tuyyo_dashboard/static'));
 app.use("/customer_feedback/static", express.static(__dirname + '/views/app/customer_feedback/static'));
 app.use("/mobile_app_reviews_ui/static", express.static(__dirname + '/views/app/mobile_app_reviews_ui/static'));
+app.use("/mobile_security_word_search/static", express.static(__dirname + '/views/app/mobile_security_word_search/static'));
 
 //Make sure the user is authenticated if the user tries to go to any of the URLs within /app/
 app.get('/app/*', function (req, res, next) {
