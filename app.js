@@ -1,6 +1,11 @@
 "use strict";
 
 require('dotenv').config()
+var fs = require('fs')
+var path = require('path')
+var Papa = require('papaparse')
+var moment = require('moment')
+var winston = require('winston')
 
 var express = require('express'),
     app = express(),
@@ -47,6 +52,13 @@ app.use("/tuyyo_dashboard/static", express.static(__dirname + '/views/app/tuyyo_
 app.use("/customer_feedback/static", express.static(__dirname + '/views/app/customer_feedback/static'));
 app.use("/mobile_app_reviews_ui/static", express.static(__dirname + '/views/app/mobile_app_reviews_ui/static'));
 app.use("/mobile_security_word_search/static", express.static(__dirname + '/views/app/mobile_security_word_search/static'));
+app.use("/api_testing/static", express.static(__dirname + '/views/app/api_testing/static'));
+
+var logger = new (winston.Logger)({
+    transports: [
+        new (winston.transports.File)({ filename: 'access.log' })
+    ]
+})
 
 //Make sure the user is authenticated if the user tries to go to any of the URLs within /app/
 app.get('/app/*', function (req, res, next) {
@@ -55,6 +67,7 @@ app.get('/app/*', function (req, res, next) {
     req.session.oauth2return = req.originalUrl
     
     if (req.isAuthenticated() && checkDomain(req.user.email) === "bbva.com") {
+        logger.log('info', "User: " + req.user.displayName + " Accessed: " + req.originalUrl + " At: " + moment().format('MMMM Do YYYY, h:mm:ss a'))
         res.sendFile(__dirname + '/views/' + req.originalUrl + '/index.html')
     } else {
         res.redirect('/auth/login')
@@ -71,6 +84,23 @@ app.get('/getProfile', function (req, res) {
 
 app.get('/getEmail', function(req, res){
     res.json(req.user.email)
+})
+
+app.get('/api/get_testing_mapping', function(req, res){
+    
+    fs.readFile(path.resolve(__dirname, 'views/app/data/api_testing_mapping.csv'), 'utf-8', (err, file) => {
+
+        if(err){
+            console.log(err)
+        }
+        
+        Papa.parse(file, {
+            header: true,
+            complete: (results) => {
+                res.send(results)
+            }
+        })
+    })
 })
 
 app.get(
@@ -108,7 +138,7 @@ app.get(
     // Redirect back to the original page, if any
     (req, res) => {
         if(checkDomain(req.user.email) === "bbva.com"){
-            const redirect = req.session.oauth2return || '/';
+            const redirect = req.session.oauth2return || '/app/';
             delete req.session.oauth2return;
             res.redirect(redirect);
         } else {

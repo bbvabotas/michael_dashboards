@@ -13,7 +13,7 @@ var app;
 /*      Date range picker       */
 
 $('#date_range').daterangepicker({
-    opens: 'center',
+    opens: 'left',
     locale: {
         format: 'YYYY-MM-DD'
     },
@@ -61,7 +61,8 @@ app = new Vue({
         ios_query: '',
         appList: [
             {app:'Argentina Mobile'},{app:'Colombia Mobile'},{app:'Mexico Mobile'},{app:'Paraguay Mobile'},
-            {app:'Peru Mobile'},{app:'Spain Mobile'},{app:'US Mobile'},{app:'Venezuela Mobile'}
+            {app:'Peru Mobile'},{app:'Spain Mobile'},{app:'US Mobile'},{app:'Venezuela Mobile'},
+            {app:'Colombia Wallet'},{app:'Mexico Wallet'},{app:'Peru Wallet'},{app:'Spain Wallet'},{app:'US Wallet'},
         ],
         appName: 'Argentina Mobile',
         selected_country: '',
@@ -109,11 +110,11 @@ app = new Vue({
             //Convert the name into DB friendly names
             let android_db = this.appName.toLowerCase()
             android_db = android_db.split(' ')
-            android_collection = 'mobile-android-' + android_db[0]
+            android_collection = android_db[1] + '-android-' + android_db[0]
             
             let ios_db = this.appName.toLowerCase()
             ios_db = ios_db.split(' ')
-            ios_collection = 'mobile-ios-' + ios_db[0]
+            ios_collection = ios_db[1] + '-ios-' + ios_db[0]
             
             //Get Android data
             axios.get('http://ec2-34-224-93-84.compute-1.amazonaws.com:8080/api/get_mobile_data?start_date=' + start_date + '&end_date=' + end_date + '&current_collection=' + android_collection)

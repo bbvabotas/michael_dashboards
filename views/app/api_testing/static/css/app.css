@@ -1,0 +1,23 @@
+.page_title {
+    margin: 20px 0;
+/*    padding: 10px 0;*/
+    font-size: 2em;
+}
+.page_title img {
+    height: 40px;
+    margin: 10px 0;
+}
+.item_wrapper {
+    margin: 20px 0;
+}
+.user_input {
+    width: 300px;
+    margin: auto;
+}
+.table_api_type {
+    min-width: 200px;
+}
+.table_api_url {
+    width: 100%;
+    text-align: left;
+}
