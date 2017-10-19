@@ -17,7 +17,8 @@ var express = require('express'),
 var GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET,
     GOOGLE_CALLBACK = process.env.GOOGLE_CALLBACK,
-    SESSION_SECRET = process.env.SESSION_SECRET
+    SESSION_SECRET = process.env.SESSION_SECRET,
+    API_KEY = process.env.API_KEY
 
 passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
@@ -60,6 +61,12 @@ var logger = new (winston.Logger)({
     ]
 })
 
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+})
+
 //Make sure the user is authenticated if the user tries to go to any of the URLs within /app/
 app.get('/app/*', function (req, res, next) {
 
@@ -84,6 +91,26 @@ app.get('/getProfile', function (req, res) {
 
 app.get('/getEmail', function(req, res){
     res.json(req.user.email)
+})
+
+app.get('/api/get_access_logs', function(req, res){
+    if(req.query.api_key == API_KEY){
+
+        fs.readFile(path.resolve(__dirname, 'access.log'), 'utf-8', (err, file) => {
+            let temp = file
+            
+            temp = temp.replace(/\n/g, ",")
+            
+            temp = "[" + temp.slice(0, temp.length-1) + "]"
+            
+            res.send(temp)
+            
+        })
+        
+    } else {
+        res.send('invalid')
+    }
+    
 })
 
 app.get('/api/get_testing_mapping', function(req, res){
@@ -179,7 +206,7 @@ function addTemplateVariables(req, res, next) {
     res.locals.profile = req.user;
     res.locals.login = `/auth/login?return=${encodeURIComponent(req.originalUrl)}`;
     res.locals.logout = `/auth/logout?return=${encodeURIComponent(req.originalUrl)}`;
-    next();
+    next(); 
 }
 
 var port = 8099;

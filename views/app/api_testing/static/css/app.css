@@ -21,3 +21,48 @@
     width: 100%;
     text-align: left;
 }
+.table_function {
+    min-width: 100px;
+}
+.table_endpoint {
+    min-width: 200px;
+}
+.table_message {
+    width: 100%;
+}
+.table_status {
+    min-width: 100px;
+}
+.table th {
+    text-align: center;
+}
+.error_table_highlight {
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 10px;
+}
+.results_table_sort:hover{
+    cursor: pointer;
+}
+.endpoint_box {
+    /* width: 150px; */
+    width: 19%;
+    /* height: 200px; */
+    vertical-align: top;
+    display: inline-block;
+    padding: 10px;
+    color: lightgray;
+    /* border: 1px solid lightgray; */
+    overflow-wrap: break-word;
+    /* margin: 10px 0; */
+}
+.endpoint_validation_idicator{
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin: 10px auto;
+}
+.test_data_header {
+    background-color: #e6e6e6;
+}

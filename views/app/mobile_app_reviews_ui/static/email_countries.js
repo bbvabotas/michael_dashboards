@@ -16,7 +16,7 @@ const emailCountries = {
     "mobile-ios-paraguay": "BBVA Paraguay",
     "mobile-ios-peru": "BBVA Continental (Peru)",
     "mobile-ios-spain": "BBVA Spain",
-    "mobile-ios-turkey": "aranti Cep (Turkey)",
+    "mobile-ios-turkey": "Garanti Cep (Turkey)",
     "mobile-ios-us": "BBVA Compass (US)",
     "mobile-ios-venezuela": "BBVA Provinet Movil (Venezuela)"
 }

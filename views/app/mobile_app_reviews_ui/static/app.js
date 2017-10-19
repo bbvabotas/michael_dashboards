@@ -129,7 +129,8 @@ app = new Vue({
                 rating: 0
             }
             
-            //console.log(start_date + ' to ' + end_date + ' for ' + collection)
+            collection = 'wallet-ios-us'
+
             //https://botas-mlab-appreviews.herokuapp.com/api/get_wallet_data
             axios.get('http://ec2-34-224-93-84.compute-1.amazonaws.com:8080/api/get_mobile_data?start_date=' + start_date + '&end_date=' + end_date + '&current_collection=' + collection)
             .then(function (response) {

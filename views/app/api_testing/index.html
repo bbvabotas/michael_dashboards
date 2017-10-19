@@ -15,14 +15,17 @@
 <body style="text-align: center;">
 
     <div id="app">
-        <div style="width:75%; margin:auto">
+        <div style="width:90%; margin:auto">
             <div class="row">
                 <div class="col-sm-12">
                     
-                    <div class="page_title">
-                        <img src="/api_testing/static/img/ramllogo.png">
+                    <!-- <div class="page_title">
+                        <img src="static/img/ramllogo.png">
                         <div>Tester</div>    
-                    </div>
+                    </div> -->
+
+                    <h2>GloMo API Validation</h2>
+
                     <hr>
                 </div>
             </div>
@@ -31,16 +34,17 @@
                    <div class="col-sm-6">
                         <div class="item_wrapper">
                             <label for="sel_country">Country:</label>
-                            <select class="form-control user_input" id="sel_country">
+                            <select class="form-control user_input" id="sel_country" v-model="country">
                                 <option>Mexico</option>
                                 <option>Peru</option>
                             </select>
                         </div>
                         <div class="item_wrapper">
                             <label for="sel_env">Environment:</label>
-                            <select class="form-control user_input" id="sel_env">
+                            <select class="form-control user_input" id="sel_env" v-model="environment">
                                 <option>Test</option>
                                 <option>Dev</option>
+                                <option>QA</option>
                             </select>
                         </div>
                     </div>
@@ -57,11 +61,18 @@
                     </div>
                 </div>
                 
-                <div v-if="show_functions_if_credentials" style="margin-top:20px">
+                <div v-if="show_functions_if_credentials" style="margin:20px 0">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="alert alert-info" style="padding: 10px 0;">
+                                The below data will be tested. Click on the submit button to continue.
+                            </div>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="item_wrapper">
-                                <label for="sel_func">Functions:</label>
+                                <label for="sel_func">Epic:</label>
                                 <select class="form-control user_input" id="sel_func" v-model="selectedFunction" @change="updateApiList">
                                     <option v-for="option in functionList" v-bind:value="option.item">
                                         {{ option.item }}
@@ -70,19 +81,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="alert alert-info" style="padding: 10px 0;">
-                                The below data will be tested. Click on the submit button to continue.
-                            </div>
-                        </div>
-                    </div>
+                    
                     <div v-if="haveApiList" class="row">
                         <div class="col-sm-12">
                             <table class="table table-striped table-bordered">
                                 <thead style="display:block">
                                     <tr>
-                                        <th class="table_api_type">Function</th>
+                                        <th class="table_api_type">Epic</th>
                                         <th class="table_api_url" style="text-align: center">API URL</th>
                                     </tr>
                                 </thead>
@@ -130,7 +135,7 @@
                         <div class="col-sm-12">
                             <button class="btn btn-default" @click="submit" :disabled="submit_loading">Submit</button>
                             <div v-if="submit_loading" style="margin:0 20px; display:inline-block">
-                                Testing <i class="fa fa-spinner fa-pulse fa-2x fa-fw" style="vertical-align: middle;"></i>
+                                submitting data <i class="fa fa-spinner fa-pulse fa-2x fa-fw" style="vertical-align: middle;"></i>
                             </div>
                         </div>
                     </div>
@@ -139,90 +144,173 @@
                 
             </div>
             <div v-if="page == 'results'">
+                <!-- <div class="row">
+                    <div class="col-sm-12">
+                        <div style="float:right;padding:10px;" v-if="progress_bar_width == 100">
+                            <div style="cursor:pointer;"><i class="fa fa-download fa-2x export_button" title="Download to CSV" @click="exportDataToCSV()"></i></div>
+                        </div>
+                    </div>
+                </div> -->
                 <div class="row">
                     <div class="col-sm-12">
-                        <div style="float:left">
-                            <button @click="back" class="btn btn-default">Back</button>
+                        <div style="float:left;">
+                            <button @click="back" class="btn btn-default" style="margin:10px 0">Back</button>
                         </div>
-                        <h2>Results</h2>
-                        <div class="alert alert-warning">
-                            <strong>Note!</strong> This is not actual results.  This is to see what the results would look like
+                        <div>
+                            <button @click="showDashboard" class="btn btn-default" style="margin:10px 0">Overview</button>
+                            <button @click="showTable" class="btn btn-default" style="margin:10px 0">Details</button>
                         </div>
                     </div>
                 </div>
+
+                
+
                 <div class="row">
+                    <div class="col-sm-8">
+                        <!-- <div>Test data</div> -->
+                        <div style="margin:20px 0;">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th colspan="5" class="test_data_header">Test Data</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Country</th>
+                                        <th>Environment</th>
+                                        <th>Username</th>
+                                        <th>Password</th>
+                                        <th>Function</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{ country }}</td>
+                                        <td>{{ environment }}</td>
+                                        <td>{{ username }}</td>
+                                        <td>{{ password }}</td>
+                                        <td>{{ selectedFunction }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div>
+                    <div class="col-sm-4">
+                        <div style="height:150px;" id="validation_chart"></div>
+                    </div>
+                </div>
+                <!-- <div class="row">
                     <div class="col-sm-12">
-                       
-                        <h3>Overview</h3>
-                        <div style="float:right">
-                            <div style="cursor:pointer;"><i class="fa fa-download fa-2x export_button" title="Download to CSV" @click="exportDataToCSV()"></i></div>
+                        <h2>Results</h2>
+                    </div>
+                </div> -->
+                <div class="row" style="height:100px;">
+                    <div class="col-sm-12">
+                        <div v-if="progress_bar_width != 100">
+                            <div>progress</div>
+                            <div>{{ data_count }} / {{ data_total_count }}</div>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped active" role="progressbar" 
+                                v-bind:style="{ width: progress_bar_width + '%'}"></div>
+                            </div>
                         </div>
-                        <table class="table table-striped table-bordered">
+                    </div>
+                </div>
+                <div class="row" v-if="show_dashboard">
+                    <div class="col-sm-12">
+                        <div style="text-align:left">
+                            <div v-for="item in resultsApiDasboard" style="margin:20px 0">
+                                <div>
+                                    <strong>{{ item.function }}</strong>
+                                </div>
+                                <div class="endpoint_box" style="text-align: center;" v-for="url in item.endpoints">
+                                    <div class="endpoint_validation_idicator" v-bind:style="{backgroundColor : url.color}"></div>
+                                    <div v-bind:style="{color : url.color}">
+                                        {{ url.endpoint }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="row" v-if="show_table">
+                    <div class="col-sm-12">
+                        <div style="float:right;" v-if="progress_bar_width == 100">
+                            <div style="cursor:pointer;margin:10px 0;"><i class="fa fa-download fa-2x export_button" title="Download to CSV" @click="exportDataToCSV()"></i></div>
+                        </div>
+                        <table class="table table-hover table-bordered" v-if="progress_bar_width > 0">
                             <thead>
                                 <tr>
-                                    <th class="table_api_url" style="text-align: center">API URL Overview</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="table_api_url">/accounts?expand=customized-formats</td>
-                                    <td>
-                                        <i style="color:green" class="fa fa-thumbs-o-up"></i>
-                                        
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="table_api_url">/accounts/v0/balances</td>
-                                    <td>
-                                        <i style="color:red" class="fa fa-thumbs-o-down"></i>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <h3>Detailed</h3>
-                        <div style="float:right">
-                            <div style="cursor:pointer;"><i class="fa fa-download fa-2x export_button" title="Download to CSV" @click="exportDataToCSV()"></i></div>
-                        </div>
-                        <table class="table table-striped table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Function</th>
-                                    <th>Endpoint</th>
-                                    <th>Message</th>
-                                    <th>Status</th>
-                                    
+                                    <th class="table_function">
+                                        <div>Function</div>
+                                        <div>
+                                            <i class="fa fa-arrow-circle-o-down results_table_sort" v-bind:style="{color: sort_results_function_desc}" @click="sortResults('sort_results_function_desc')"></i>
+                                            <i class="fa fa-arrow-circle-o-up results_table_sort" v-bind:style="{color: sort_results_function_asc}" @click="sortResults('sort_results_function_asc')"></i>
+                                        </div>
+                                    </th>
+                                    <th class="table_endpoint">
+                                        <div>Endpoint</div>
+                                        <div>
+                                            <i class="fa fa-arrow-circle-o-down results_table_sort" v-bind:style="{color: sort_results_endpoint_desc}" @click="sortResults('sort_results_endpoint_desc')"></i>
+                                            <i class="fa fa-arrow-circle-o-up results_table_sort" v-bind:style="{color: sort_results_endpoint_asc}" @click="sortResults('sort_results_endpoint_asc')"></i>
+                                        </div>
+                                    </th>
+                                    <th class="table_message">
+                                        <div>Message</div>
+                                        <div>
+                                            <i class="fa fa-arrow-circle-o-down results_table_sort" v-bind:style="{color: sort_results_message_desc}" @click="sortResults('sort_results_message_desc')"></i>
+                                            <i class="fa fa-arrow-circle-o-up results_table_sort" v-bind:style="{color: sort_results_message_asc}" @click="sortResults('sort_results_message_asc')"></i>
+                                        </div>
+                                    </th>
+                                    <th class="table_status">
+                                        <div>Status</div>
+                                        <div>
+                                            <i class="fa fa-arrow-circle-o-down results_table_sort" v-bind:style="{color: sort_results_status_desc}" @click="sortResults('sort_results_status_desc')"></i>
+                                            <i class="fa fa-arrow-circle-o-up results_table_sort" v-bind:style="{color: sort_results_status_asc}" @click="sortResults('sort_results_status_asc')"></i>
+                                        </div>
+                                    </th>
                                 </tr>
                             </thead>
                            
-                            <tbody>
-                                <tr>
-                                    <td>Dashboard (Products)</td>
-                                    <td>/accounts/v0/balances</td>
-                                    <td>Failed to do stuff</td>
-                                    <td><i style="color:red" class="fa fa-thumbs-o-down"></i></td>
-                                    
-                                </tr>
-                                <tr>
-                                    <td>Dashboard (Products)</td>
-                                    <td>/accounts?expand=customized-formats</td>
-                                    <td>Successfuly did stuff</td>
-                                    <td><i style="color:green" class="fa fa-thumbs-o-up"></i></td>
-                                    
+                            <tbody style="text-align: left">
+                                <tr v-for="item in api_table_data">
+                                    <td class="table_function">
+                                        {{ item.function }}
+                                    </td>
+                                    <td class="table_endpoint">
+                                        {{ item.endpoint }}
+                                    </td>
+                                    <td class="table_message">
+                                        <div v-if="item.status == 'fail'">
+                                            <div class="error_table_highlight">{{ item.message }}</div>
+                                        </div>
+                                        <div v-else>
+                                            {{ item.message }}
+                                        </div>
+                                    </td>
+                                    <td  class="table_status" style="text-align: center">
+                                        <div v-if="item.status == 'fail'">
+                                            <i style="color:red" class="fa fa-2x fa-thumbs-o-down"></i>
+                                        </div>
+                                        <div v-if="item.status == 'success'">
+                                            <i style="color:green" class="fa fa-2x fa-thumbs-o-up"></i>
+                                        </div>
+                                    </td>
                                 </tr>
                             </tbody>
-                            
                         </table>
                     </div>
                 </div>
+                <div class="row" v-if="progress_bar_width != 100">
+                    <div class="col-sm-12">
+                        <i class="fa fa-spinner fa-pulse fa-2x fa-fw" style="vertical-align: middle;"></i>
+                    </div>
+                </div>
             </div>
-        </div>
-        
+        </div>        
     </div>
-   
-
-    
-    
+     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://unpkg.com/highcharts/highcharts.js"></script>
